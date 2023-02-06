@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -81,12 +81,19 @@ namespace Match3.App
             {
                 NotifySequencesSolved(solvedData);
                 await _jobsExecutor.ExecuteJobsAsync(fillStrategy.GetSolveJobs(GameBoard, solvedData), cancellationToken);
+
+                while (IsSolveExistOnBoard(out solvedData))
+                {
+                    await _jobsExecutor.ExecuteJobsAsync(fillStrategy.GetSolveJobs(GameBoard, solvedData), cancellationToken);
+                }
             }
             else
             {
                 await SwapItems(position1, position2, cancellationToken);
             }
         }
+
+
 
         private async UniTask SwapItems(GridPosition position1, GridPosition position2,
             CancellationToken cancellationToken = default)
